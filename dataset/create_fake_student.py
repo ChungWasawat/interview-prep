@@ -1,5 +1,7 @@
-from datetime import datetime
+import os
+from dotenv import load_dotenv
 
+from datetime import datetime
 from faker import Faker
 import random
 
@@ -12,7 +14,9 @@ import polars as pl
 fake = Faker()
 Faker.seed(42)
 random.seed(42)
-path = 'student/'
+load_dotenv()
+path = os.getenv("DATA_PATH", default="NaN") + "\\student\\"
+
 
 def create_student(student:list, student_n:int) -> list:
     for i in range(1, student_n +1):
