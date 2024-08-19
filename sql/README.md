@@ -59,9 +59,23 @@ Set salary=99000
 WHERE id=1;
 ```
 delete rows 
+1. no subquery
 ```
 DELETE FROM employee
 WHERE id in (4,5);
+```
+2. subquery
+```
+DELETE FROM Person 
+WHERE id IN (
+    SELECT a.id
+    FROM (
+        SELECT id, email,
+               ROW_NUMBER() OVER (PARTITION BY email ORDER BY id) AS rn
+        FROM Person
+    ) a
+    WHERE a.rn > 1
+);
 ```
 ## DQL
 create a new column from another one
@@ -70,6 +84,24 @@ SELECT
     name,
     LOWER(name) || "@company.com" as company_email
 FROM employee;
+```
+substring
+```
+SELECT SUBSTRING ('PostgreSQL', 1, 8);
+```
+regular expression
+1. ~ / !~ (postgresql)
+```
+select *
+from Patients
+where conditions ~ '^(.*\s)?DIAB1' 
+```
+string_agg() postgresql
+```
+select sell_date, count(distinct product) as num_sold, string_agg(distinct product, ',') as products
+from Activities
+group by sell_date
+order by 2 desc
 ```
 join
 ```
@@ -90,7 +122,8 @@ FROM artists, albums, tracks
 WHERE 
     artists.artistid = albums.artistid -- PK = FK 
     AND albums.albumid = tracks.albumid 
-    AND artists.artistid IN (8, 100, 120);
+    AND artists.artistid IN (8, 100, 120)
+    AND artists.name != "GGGG";
 ```
 use "in" in where clause
 ```
@@ -115,6 +148,12 @@ where Email like "%hotmail.com";
 --2 _ = anything but only character
 select FirstName, LastName, Country, Email FROM customers 
 where FirstName like "M_rc";
+```
+char_length
+```
+select tweet_id
+from Tweets
+where char_length(content) > 15
 ```
 round number
 ```
@@ -160,6 +199,21 @@ select
     DATE_FORMAT(trans_date, "%Y-%m") as month ,
 from Transactions
 where DATE_FORMAT(trans_date, "%Y-%m") = "2018-12"
+```
+data_add() -mysql
+```
+SELECT W1.id
+FROM Weather W1
+JOIN Weather W2
+ON W1.recordDate = DATE_ADD(W2.recordDate, INTERVAL 1 DAY)
+WHERE W1.temperature > W2.temperature;
+```
+datediff() -mysql
+```
+SELECT w1.id
+FROM Weather w1, Weather w2
+WHERE DATEDIFF(w1.recordDate, w2.recordDate) = 1
+  AND w1.temperature > w2.temperature;
 ```
 random number
 ```
