@@ -4,3 +4,4 @@ polars
 duckdb
 pyarrow
 fastparquet
+python-dotenv
