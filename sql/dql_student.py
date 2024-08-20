@@ -90,11 +90,26 @@ q6_5 = duckdb.sql(f"select count( * ) as morethan50     \
                     group by exam_id")
 #print(q6_5)
 
-# q7
-q7 = duckdb.sql(f"select date_of_birth, \
-                count(date_of_birth)        \
-                from '{student_path}' s     \
-                group by 1                  \
-                order by 1 ")
+# q7 need to order by unique values rather than exam_id to get more understanding example
+q7 = duckdb.sql(f"select s.first_name || ' ' || s.last_name as name,            \
+                c.course_name, e.exam_id, se.score,     \
+                sum(se.score) over (partition by c.course_name order by se.exam_id range unbounded preceding) as sum_score  \
+                from '{student_path}' s                 \
+                join '{studentexam_path}' se on s.student_id = se.student_id    \
+                join '{exam_path}' e on se.exam_id = e.exam_id                  \
+                join '{course_path}' c on e.course_id = c.course_id             \
+                order by c.course_name, se.exam_id")
 #print(q7)
 
+# q8
+q8 = duckdb.sql(f"select s.first_name || ' ' || s.last_name as name,            \
+                c.course_name, e.exam_id, se.score,     \
+                lag(se.score) over (partition by s.student_id, c.course_id order by e.exam_id) as prev_test,    \
+                lead(se.score) over (partition by s.student_id, c.course_id order by e.exam_id) as next_test,   \
+                ifnull( (se.score/prev_test) -1, 0 ) as progress_from_prev      \
+                from '{student_path}' s                 \
+                join '{studentexam_path}' se on s.student_id = se.student_id    \
+                join '{exam_path}' e on se.exam_id = e.exam_id                  \
+                join '{course_path}' c on e.course_id = c.course_id             \
+                order by name, c.course_name, se.exam_id")
+print(q8)

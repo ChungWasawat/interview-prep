@@ -12,9 +12,13 @@ path = os.getenv("STUDENT_DATA_PATH", default="NaN")
 student_path = f"{path}\\student.csv"
 
 """
-How would you modify the schema to include a new feature where each student can have an 
-advisor, who is also a student in the system? Describe the changes and write an SQL query to 
-find all students who are advisors. (4 points
+CREATE TABLE Student (
+    student_id int not null auto_increment,
+    first_name varchar(255),
+    last_name varchar(255),
+    date_of_birth date,
+    PRIMARY KEY (student_id)
+);
 """
 # q1 add new column "advisor"
 q0 = duckdb.sql(f"create TABLE student_csv as SELECT * FROM read_csv('{student_path}')")

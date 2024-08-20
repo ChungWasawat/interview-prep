@@ -61,4 +61,32 @@ q4 = duckdb.sql(f"select well_name,             \
                 ")
 #print(q4)
 
-# q5
+# q5 use preceding, following
+q5 = duckdb.sql(f"select well_name, production_date, water_volume,      \
+                sum(water_volume) over (partition by w.well_id order by production_date rows between 1 preceding and current row) as current_and_prev1, \
+                sum(water_volume) over (partition by w.well_id order by production_date rows between 1 preceding and 1 following) as prev1_and_next1    \
+                from '{well_path}' w                                    \
+                left join '{prod_path}' p on w.well_id = p.well_id      \
+                order by w.well_id, production_date")                
+# print(q5)
+
+# q6 use unbounded instead of number before preceding/ following
+q6 = duckdb.sql(f"select well_name, production_date, water_volume,      \
+                max(water_volume) over (partition by w.well_id order by production_date rows unbounded preceding) as past_max_water_prod    \
+                from '{well_path}' w                                    \
+                left join '{prod_path}' p on w.well_id = p.well_id      \
+                order by w.well_id, production_date ")  
+#print(q6)
+
+# q7
+q7 = duckdb.sql(f"select strftime(production_date, '%Y-%m-01')          \
+                from '{prod_path}'")
+q7_5 = duckdb.sql(f"select well_id, cast(production_date as date), cast(prev_prod as date)              \
+                from ( select well_id, production_date,                 \
+                lag(production_date) over (partition by well_id order by production_date) as prev_prod  \
+                from '{prod_path}' )                                    \
+                where production_date - prev_prod > 3 ") 
+# it should be "interval 5 day" instead of 5 if the result reture interval, not bigint
+# so I can use 'range between interval 3 day preceding and interval 3 day following'
+print(q7_5)
+

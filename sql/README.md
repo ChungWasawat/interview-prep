@@ -78,6 +78,7 @@ WHERE id IN (
 );
 ```
 ## DQL
+* avoid to use window function [over (partition by order by)] because the cost is so expensive as db have to scan all rows
 create a new column from another one
 ```
 SELECT
@@ -219,7 +220,7 @@ random number
 ```
 SELECT name, random()
 FROM tracks
-order by random() DESC
+order by random() DESC limit n --skip first n row
 ```
 regular expression
 1. glob
