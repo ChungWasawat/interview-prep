@@ -19,12 +19,12 @@ q1 = duckdb.sql(f"select well_name,                     \
                     sum(oil_volume) as total_oil,       \
                     sum(gas_volume) as total_gas,       \
                     sum(water_volume) as total_water,   \
-                    total_oil+total_gas+total_water as total_prod   \
+                    total_oil+total_gas+total_water as total_prod       \
                 from '{well_path}' w                    \
                 join '{prod_path}' p                    \
                 on w.well_id = p.well_id                \
                 where extract('year' FROM production_date) = 2023 and   \
-                    extract('month' FROM production_date) = 7   \
+                    extract('month' FROM production_date) = 7           \
                 group by well_name                      \
                 ")                  
 #print(q1)
@@ -34,19 +34,19 @@ q2 = duckdb.sql(f"select w.well_id, well_name,  \
                 from '{well_path}' w            \
                 left join '{prod_path}' p       \
                 on w.well_id = p.well_id        \
-                where extract('year' FROM production_date) = 2023   \
+                where extract('year' FROM production_date) = 2023       \
                 group by 1, 2                   \
                 having sum(gas_volume) =0")
 #print(q2)
 
 # q3
-q3 = duckdb.sql(f"select well_name, equipment_type, description     \
+q3 = duckdb.sql(f"select well_name, equipment_type, description         \
                 from '{well_path}' w            \
                 inner join '{eqm_path}' e       \
                 on w.well_id = e.well_id        \
                 inner join '{mtn_path}' m       \
-                on e.equipment_id = m.equipment_id      \
-                where extract('month' FROM maintenance_date) = 7    \
+                on e.equipment_id = m.equipment_id          \
+                where extract('month' FROM maintenance_date) = 7        \
                 order by 1, 2 ")          
 #print(q3)
 
@@ -56,7 +56,7 @@ q4 = duckdb.sql(f"select well_name,             \
                 from '{well_path}' w            \
                 left join '{prod_path}' p       \
                 on w.well_id = p.well_id        \
-                where location = 'Lake Joshuabury'  \
+                where location = 'Lake Joshuabury'          \
                 group by well_name              \
                 ")
 #print(q4)
@@ -72,7 +72,7 @@ q5 = duckdb.sql(f"select well_name, production_date, water_volume,      \
 
 # q6 use unbounded instead of number before preceding/ following
 q6 = duckdb.sql(f"select well_name, production_date, water_volume,      \
-                max(water_volume) over (partition by w.well_id order by production_date rows unbounded preceding) as past_max_water_prod    \
+                max(water_volume) over (partition by w.well_id order by production_date rows unbounded preceding) as past_max_water_prod                \
                 from '{well_path}' w                                    \
                 left join '{prod_path}' p on w.well_id = p.well_id      \
                 order by w.well_id, production_date ")  

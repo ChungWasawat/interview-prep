@@ -52,7 +52,7 @@ q3 = duckdb.sql(f"select c.course_name,                     \
 
 #query 4
 q4 = duckdb.sql(f"select s.student_id,                  \
-                s.first_name || ' ' || s.last_name as name \
+                s.first_name || ' ' || s.last_name as name      \
                 from '{student_path}' s                 \
                 left join '{studentexam_path}' se       \
                 on s.student_id = se.student_id         \
@@ -65,7 +65,7 @@ q5 = duckdb.sql(f"select distinct name, *               \
                 from (                                  \
                     select c.course_name,               \
                         se.exam_id,                     \
-                        s.first_name || ' ' || s.last_name as name,     \
+                        s.first_name || ' ' || s.last_name as name,             \
                         se.score,                       \
                         rank_dense() over(partition by c.course_name order by se.score desc) as rank \
                     from '{course_path}' c              \
@@ -81,7 +81,7 @@ q5 = duckdb.sql(f"select distinct name, *               \
 #print(q5)
 
 # q6
-q6 = duckdb.sql(f"select sum( if(score > 50, 1, 0) ) as morethan50  \
+q6 = duckdb.sql(f"select sum( if(score > 50, 1, 0) ) as morethan50              \
                 from '{studentexam_path}'               \
                 group by exam_id ")
 q6_5 = duckdb.sql(f"select count( * ) as morethan50     \

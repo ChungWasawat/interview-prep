@@ -31,14 +31,14 @@ q1_2 = duckdb.sql(f"select * from student_csv")
 
 
 # q2 find all new advisors
-q2 = duckdb.sql(f"select s2.student_id, s2.first_name || ' ' || s2.last_name as name, s2.date_of_birth \
-                from student_csv s1             \
+q2 = duckdb.sql(f"select s2.student_id, s2.first_name || ' ' || s2.last_name as name, s2.date_of_birth      \
+                from student_csv s1                     \
                 join student_csv s2 on s1.advisor = s2.student_id")
 #print(q2)
 
 # q3 test window function
-q3 = duckdb.sql(f"select student_id, first_name || ' ' || last_name as name, \
+q3 = duckdb.sql(f"select student_id, first_name || ' ' || last_name as name,                                \
                 date_of_birth, sum(student_id) over(partition by date_of_birth order by student_id) as test \
-                from student_csv              \
+                from student_csv                        \
                 order by 3")
 #print(q3)
