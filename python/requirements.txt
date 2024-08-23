@@ -1,0 +1,6 @@
+numpy
+pandas
+polats
+duckdbpyarrow
+fastparquet
+python-dotenv
