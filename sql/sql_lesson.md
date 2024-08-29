@@ -17,13 +17,15 @@ create table employee (
 
 --mysql version
 create table employee (
-    id int NOT NULL PRIMARY KEY,
+    id int NOT NULL,
     pid int,
     name text,
     department text,
     position text,
-    salary real
-    UNIQUE (pid)
+    salary real,
+    UNIQUE (id)
+    PRIMARY KEY (id)
+    FOREIGN KEY (pid) REFERENCES persons(pid)
     );
 ```
 2. copy table (can create a table from a csv file with this command in duckdb)
@@ -34,6 +36,11 @@ SELECT * FROM employeeV2;
 3. delete table
 ```
 DROP TABLE employeeV2_Backup;
+
+--delete views  
+--1. cascade: drop all objects depend on this view
+--2. restrict-default: return error if there are objects depend on the view
+drop view films [cascade | restrict]; 
 ```
 4. alter a table (rename, add new column, delete column, change datatype)
 ```
@@ -55,6 +62,72 @@ ADD DateOfBirth date;
 --change datatype 2
 ALTER TABLE Persons
 ALTER(/MODIFY) COLUMN DateOfBirth year;
+
+--add a constraint for a foreign key
+ALTER TABLE fact_booksales ADD CONSTRAINT sales_book
+    FOREIGN KEY (book_id) REFERENCES dim_book_star (book_id);
+
+--alter view
+alter view [if exists] vw_name alter [column] col_name set default expression
+alter view [if exists] vw_name alter [column] col_name drop default 
+alter view [if exists] vw_name owner to new_owner
+alter view [if exists] vw_name rename to new_name
+alter view [if exists] vw_name set schema new_schema
+alter view [if exists] vw_name set (view_option_name [= view_option_value])
+alter view [if exists] vw_name reset (view_option_name [, ..])
+
+--alter role 
+alter role admin CREATEROLE;
+```
+5. create a view
+```
+--replace when there is update to old query like adding new column but it still remains the old one's schema 
+--otherwise drop the old and create new one
+create or replace view vw_customer_share
+as 
+select customer as customer_name
+count(*) as purchase count
+from sales_table
+group by customer_name
+
+--postgresql, to see all views
+select * from INFORMATION_SCHEMA.views; 
+--postgresql, all views except system views
+select * from INFORMATION_SCHEMA.views
+where table_schema not in ('pg_catalog', 'information_schema');
+--postgresql, create materialized view
+create materialized view vw_name as select * from table_name
+refresh materialized view vw_name --can use cron to schedule view
+```
+6. create role 
+```
+create role alex with password 'password123' valid until '2010-01-01';
+--more attributes
+create role admin CREATEDB;
+```
+7. partitioning (need to have an index before do partitioning)
+```
+create table sales(
+    ...
+    timestamp date not null
+) partition by range(timestamp)
+--
+create table sales_2010_q1 partition of sales
+    for values from ('2010-01-01') to ('2010-03-31')
+--create index 
+create index on sales('timestamp');
+```
+
+## DCL
+1. Grant *all privilege are select, insert, delete, index(sql), create, alter(sql), drop(sql), all, update, grant(sql), truncate(postgresql), references(postgresql), connect(postgresql), temporary(postgresql)
+```
+GRANT SELECT, INSERT, DELETE, UPDATE ON view_name TO 'Amit'@'localhost';
+--grant groups role to role
+GRANT admin to alex;
+```
+2. Revoke
+```
+REVOKE ALL ON view_name FROM public; 
 ```
 
 ## DML
@@ -64,18 +137,29 @@ INSERT INTO employee VALUES
     (1, "David", "Marketing", "CEO", 120000),
     (2, "Mary", "Marketing";, "VP", 85000),
     (3, "Henry", "Sales", "Manager", 60000);
+
+-- select from other tables
+INSERT INTO dim_author
+SELECT distinct author FROM dim_book_star;
+
+-- insert data to view !!but it should be avoided
+insert into films (code, title) values ('T_601', 'Yojimbo')
 ```
 2. update existing data
 ```
 UPDATE employee
 Set salary=99000
 WHERE id=1;
---
+
+--different condition
 UPDATE employee
 Set salary=99000
 WHERE id in between 2 and 5;
+
+--update where clause on view (only views from a single table and no window or aggregation function or limit there)
+update vw_films set kind = 'Dramatic' where kind = 'Drama' 
 ```
-delete rows 
+3. delete rows 
 ```
 --common query
 DELETE FROM employee
@@ -133,7 +217,14 @@ SELECT name, random()
 FROM tracks
 order by random() DESC offset n 
 ```
+4. check a type of rows
+```
+--sql 
+select typeof(column) from table
 
+--postgresql
+select pg_typeof(column) from table
+``` 
 ### work with string
 1. create a new column from another one
 ```
@@ -166,9 +257,18 @@ where upper(country) regexp '^[UB]';
 --1 % = anything
 select FirstName, LastName, Country, Email FROM customers 
 where Email like "%hotmail.com";
+--1.1 start with, end with
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'b%s';
 --2 _ = anything but only character
 select FirstName, LastName, Country, Email FROM customers 
 where FirstName like "M_rc";
+--2.1 find the second character
+SELECT * FROM Customers
+WHERE CustomerName LIKE '_r%';
+--2.2 find string start with "a" and are at least 3 characters in length
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'a__%';
 ```
 5. use `string_agg()` to merge all text in to on row
 ```
@@ -187,7 +287,7 @@ where char_length(content) > 15
 ### about date
 1. extract specific format from datetime  
 ```
---sqlite strftime()
+--sqlite strftime() and cast() to change datatype
 SELECT
     invoicedate,
     CAST(STRFTIME('%Y', invoicedate) AS INT) AS year,
@@ -202,6 +302,12 @@ select
     DATE_FORMAT(trans_date, "%Y-%m") as month ,
 from Transactions
 where DATE_FORMAT(trans_date, "%Y-%m") = "2018-12"
+
+--SQL Server datepart()
+SELECT DATEPART(year, '2017/08/25') AS DatePartInt;
+
+--MySQL extract()
+SELECT EXTRACT(MINUTE FROM "2017-06-15 09:34:21");
 ```
 2. use `data_add()` to add/reduce date
 ```
@@ -219,6 +325,14 @@ SELECT w1.id
 FROM Weather w1, Weather w2
 WHERE DATEDIFF(w1.recordDate, w2.recordDate) = 1
   AND w1.temperature > w2.temperature;
+```
+4. use `to_date()` to convert string to date
+```
+SELECT TO_DATE('2020-05-26 13:27:18', 'YYYY-MM-DD HH24:MI:SS');
+```
+5. change timezone
+```
+
 ```
 ### deal with multiple tables
 1. `inner join`
