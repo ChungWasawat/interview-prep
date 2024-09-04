@@ -89,7 +89,7 @@ df_pdo = pd.concat([df_pd,df_pd2])
 df_pdo = pd.pivot_table(df_pd, values='Population', index=['Continent'], columns=['Area'], aggfunc="sum", fill_value=0)
 df_pdo = df_pd.drop('Country', axis=1) 
 df_pdo = df_pd.dropna()
-df_pdo = df_pd["Capital"].fillna("Missed data")
+df_pdo = df_pd["Capital"].fillna("Missed data") #fillna(value={"col1":0, "col2":2}, axis=1)
 df_pdc['multiplied_result'] = df_pdc['Population'] * df_pdc['Area']
 # polars
 df_plc = df_pl.clone()
