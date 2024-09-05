@@ -112,7 +112,7 @@ create role alex with password 'password123' valid until '2010-01-01';
 --more attributes
 create role admin CREATEDB;
 ```
-7. partitioning (need to have an index before do partitioning)
+7. partitioning (need to have an index before do partitioning) (increase query speed as it doesn't need to scan the whole data)
 ```
 create table sales(
     ...
