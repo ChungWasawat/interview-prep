@@ -9,7 +9,7 @@
 create table employee (
     id int NOT NULL PRIMARY KEY ,
     pid int UNIQUE,
-    name text,
+    name text not null,
     department text,
     position text,
     salary real
@@ -37,6 +37,9 @@ SELECT * FROM employeeV2;
 ```
 DROP TABLE employeeV2_Backup;
 
+--delete all rows but keep headers
+TRUNCATE TABLE students2;
+
 --delete views  
 --1. cascade: drop all objects depend on this view
 --2. restrict-default: return error if there are objects depend on the view
@@ -55,6 +58,10 @@ ADD email text;
 --delete a column
 ALTER TABLE Customers
 DROP COLUMN Email;
+
+--delete rows
+DELETE FROM students
+WHERE student_id = 5;
 
 --change datatype 
 ALTER TABLE Persons
