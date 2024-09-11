@@ -6,7 +6,7 @@ import polars as pl
 
 #https://www.rhosignal.com/posts/polars-pandas-cheatsheet/
 
-#variables
+"""variables"""
 load_dotenv()
 path = os.getenv("STUDENT_DATA_PATH", default="NaN")
 student_csv = f"{path}\\student.csv"
@@ -21,7 +21,7 @@ s_pd2 = pd.Series([7, -2, 3],  index=['a',  'c',  'd'])
 #print(s_pd[(s_pd < -1) | (s_pd > 2)])
 s_pdo = s_pd.drop(['a',  'c'])
 
-# Arithmetic Operations
+"""Arithmetic Operations"""
 #print(s_pd + s_pd2)                    #only show shared columns
 #print(s_pd.add(s_pd2, fill_value=0))
 #print(s_pd.sub(s_pd2, fill_value=2))
@@ -39,15 +39,17 @@ data2 = {
         '1': {'Country': 'China', 'Capital':'Shanghai', 'Continent': 'Asia', 'Population': 34342334543, 'Area': 55554518},
         '2': {'Country': 'Australia', 'Capital': 'Canberra', 'Continent': 'Oceania', 'Population': 151648349, 'Area': 978745325 }
     }
+       
+data2_converted = [val for val in data2.values()]
 
 df_pd = pd.DataFrame(data)
 df_pd2 = pd.DataFrame.from_dict(data2, orient='index')
 
 df_pl = pl.DataFrame(data)
-df_pl2 = pl.from_dataframe(df_pd2)
+df_pl2 = pl.DataFrame(data2_converted)
+df_pl2 = pl.from_dicts(data2_converted)
 
-
-# data profiling
+"""data profiling"""
 # pandas
 #print(df_pd.head(5))
 #print(df_pd.tail(5))
@@ -64,8 +66,7 @@ df_pl2 = pl.from_dataframe(df_pd2)
 #print(df_pl.shape)
 #print(df_pl.unique())                  #show unique rows
 
-
-# basic agg function
+"""basic agg function"""
 # pandas
 #print(df_pd['Country'].sum(skipna=True))
 #print(df_pd['Population'].cumsum(axis=0))
@@ -80,8 +81,7 @@ df_pl2 = pl.from_dataframe(df_pd2)
 #print(df_pl)
 #print(df_pl.group_by(by='Continent').agg( [ pl.mean('Area').alias("Area_mean")] ))
 
-
-# dataframe manipulation
+"""dataframe manipulation"""
 # pandas
 df_pdc = df_pd.copy()
 df_pdc.rename(columns={"Country":"Countries"}, inplace=True)
@@ -99,8 +99,7 @@ df_plo = df_pl.pivot( "Area", index="Continent", values="Population", aggregate_
 df_plo = df_pl.drop('Country')
 df_plo = df_pl.with_columns([(pl.col('Population') * pl.col('Area')).alias('multiplied_result')])
 
-
-# selecting
+"""selecting"""
 # pandas
 #print(df_pd[1:])
 #print(df_pd.iloc([0], [0]))            #return 'Belgium'
@@ -110,21 +109,20 @@ df_plo = df_pl.with_columns([(pl.col('Population') * pl.col('Area')).alias('mult
 #print(df_pl[1:])
 #print(df_pl[1:, :2])
 
-# change datatype
+"""change datatype"""
 # pandas
 df_pd2[["Population"]] = df_pd2[["Population"]].astype(float)
 # polars
 df_pl2[["Population"]] = df_pl2.select(pl.col("Population").cast(pl.Float64))
 
-# filtering
+"""filtering"""
 # pandas
 #print(df_pd[df_pd['Population']>1200000000])
 # polars
 #print(df_pl.filter((pl.col("Population") >1200000000 ) | (pl.col("Country") == "Belgium")))
 #print(df_pl.select(pl.col(pl.INTEGER_DTYPES).exclude('Area')))
 
-
-# sorting
+"""sorting"""
 # pandas
 #print(df_pd.sort_index())
 #print(df_pd.sort_values(by='Country') )
@@ -133,8 +131,7 @@ df_pl2[["Population"]] = df_pl2.select(pl.col("Population").cast(pl.Float64))
 #print(df_pl.sort('Country'))
 #print(df_pl.with_row_index())
 
-
-# lambda
+"""lambda"""
 # pandas
 f = lambda x: x*2
 df_pdo = df_pd.apply(f)
@@ -147,20 +144,39 @@ df_plo = df_pl.select(
     (pl.col("Population") + pl.col("Area")).alias("Normal_operation"),
 )
 
-
 """read/ write a file"""
 # read more about excel file manipulation and sqlalchemy
-# csv
+"""csv"""
 # pandas
 #df_pd = pd.read_csv(f"{student_csv}", header=None, nrows=5)
 #df_pd.to_csv(f"{path}\\student_test_pd.csv")
 # polars
 #df_pl = pl.read_csv(f"{student_csv}", has_header=True)
 #df_pl.write_csv(f"{path}\\student_test_pl.csv")
-# parquet
+"""parquet"""
 #pandas
 #df_pd = pd.read_parquet(f"{student_parquet}")
 #df_pd.to_parquet(f"{path}\\student_test_pd.parquet")
 #polars
 #df_pl = pl.read_parquet(f"{student_parquet}")
 #df_pl.write_parquet(f"{path}\\student_test_pl.parquet")
+
+"""datetime"""
+d_date = {'date': {0: '28-01-2022  5:25:00',
+  1: '27-02-2022  6:25:00',
+  2: '30-03-2022  7:25:00',
+  3: '29-04-2022  8:25:00',
+  4: '31-05-2022  9:25:00'},
+ 'date_short': {0: 'Jan-2022', 1: 'Feb-2022', 2: 'Mar-2022', 3: 'Apr-2022', 4: 'May-2022'},
+ 'unixtime': {0 : 1643365500, 1: 1645961100, 2: 1648643100, 3: 1651238700, 4: 1654007100 }}
+#pandas
+df_pd = pd.DataFrame(d_date)
+#df_pd['date'] = pd.to_datetime(df_pd['date'], format='%d-%m-%Y %H:%M:%S')
+df_pd['date'] = df_pd['date'].astype('datetime64[ns]')
+df_pd['unixtime'] = pd.to_datetime(df_pd['unixtime'], unit="s")
+#polars
+d_date_converted = {key: list(val.values()) for key, val in d_date.items()}
+df_pl = pl.DataFrame(d_date_converted)
+df_pl = df_pl.with_columns( pl.col("date").str.to_datetime(format="%d-%m-%Y %H:%M:%S") )
+df_pl = df_pl.with_columns( pl.from_epoch(pl.col('unixtime')) )
+print(df_pl)
