@@ -1,6 +1,5 @@
-import spacy
-
 """-----------------------------spacy tokenization-----------------------------"""
+import spacy
 nlp = spacy.load("en_core_web_sm")
 #nlp.remove_pipe('tagger')      #reduce model size
 #nlp.remove_pipe('parser')      #reduce model size
