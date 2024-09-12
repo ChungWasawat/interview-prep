@@ -4,3 +4,6 @@ polats
 duckdbpyarrow
 fastparquet
 python-dotenv
+pytest
+spacy
+openai
