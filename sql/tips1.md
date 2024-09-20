@@ -46,3 +46,8 @@
 3. Flexibility: The table design should be flexible enough to <ins>support different levels of granularity</ins> and the ability to drill down from year to quarter to month to day.
 4. Data Refresh: Ensure that the data refresh process is efficient and that the dashboard <ins>displays up-to-date information based on the refresh frequency</ins>.
 5. User Experience: Design the data structure to support a smooth and responsive user experience on the dashboard, <ins>with minimal delays when switching between different views (day, week, month, year)</ins>.
+
+## steps to dissect legacy SQL
+1. Understand the input data sets, what they mean, and who/what generates them, and speak to the people who created the tables that your queries use.
+2. Speak with the stakeholders using the data, what metrics they are typically looking at, Understand the metric distribution over time, what the purpose of this query (if they know) is & how they use the query results.
+3. Speak with your manager to identify the use case for the query and a general idea about the data sets used (and the warehouse data model) and how the stakeholders use the output.

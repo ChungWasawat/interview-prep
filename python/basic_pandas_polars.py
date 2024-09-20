@@ -3,10 +3,11 @@ from dotenv import load_dotenv
 
 import pandas as pd
 import polars as pl
+import datetime
 
 #https://www.rhosignal.com/posts/polars-pandas-cheatsheet/
 
-"""variables"""
+"""-------------------------------------------------variables-------------------------------------------------"""
 load_dotenv()
 path = os.getenv("STUDENT_DATA_PATH", default="NaN")
 student_csv = f"{path}\\student.csv"
@@ -21,14 +22,14 @@ s_pd2 = pd.Series([7, -2, 3],  index=['a',  'c',  'd'])
 #print(s_pd[(s_pd < -1) | (s_pd > 2)])
 s_pdo = s_pd.drop(['a',  'c'])
 
-"""Arithmetic Operations"""
+"""-------------------------------------------------Arithmetic Operations-------------------------------------------------"""
 #print(s_pd + s_pd2)                    #only show shared columns
 #print(s_pd.add(s_pd2, fill_value=0))
 #print(s_pd.sub(s_pd2, fill_value=2))
 #print(s_pd.div(s_pd2, fill_value=4))
 #print(s_pd.mul(s_pd2, fill_value=3))
 
-"""DataFrame"""
+"""-------------------------------------------------DataFrame-------------------------------------------------"""
 data = {'Country': ['Belgium',  'India',  'Brazil', 'Ghana', 'India'],
         'Capital': ['Brussels',  'New Delhi',  'Brasilia', 'Accra', None],
         'Continent': ['Europe',  'Asia',  'South America', 'Africa', 'Asia'],
@@ -49,7 +50,7 @@ df_pl = pl.DataFrame(data)
 df_pl2 = pl.DataFrame(data2_converted)
 df_pl2 = pl.from_dicts(data2_converted)
 
-"""data profiling"""
+"""-------------------------------------------------data profiling-------------------------------------------------"""
 # pandas
 #print(df_pd.head(5))
 #print(df_pd.tail(5))
@@ -66,7 +67,7 @@ df_pl2 = pl.from_dicts(data2_converted)
 #print(df_pl.shape)
 #print(df_pl.unique())                  #show unique rows
 
-"""basic agg function"""
+"""-------------------------------------------------basic agg function-------------------------------------------------"""
 # pandas
 #print(df_pd['Country'].sum(skipna=True))
 #print(df_pd['Population'].cumsum(axis=0))
@@ -81,7 +82,7 @@ df_pl2 = pl.from_dicts(data2_converted)
 #print(df_pl)
 #print(df_pl.group_by(by='Continent').agg( [ pl.mean('Area').alias("Area_mean")] ))
 
-"""dataframe manipulation"""
+"""-------------------------------------------------dataframe manipulation-------------------------------------------------"""
 # pandas
 df_pdc = df_pd.copy()
 df_pdc.rename(columns={"Country":"Countries"}, inplace=True)
@@ -99,7 +100,7 @@ df_plo = df_pl.pivot( "Area", index="Continent", values="Population", aggregate_
 df_plo = df_pl.drop('Country')
 df_plo = df_pl.with_columns([(pl.col('Population') * pl.col('Area')).alias('multiplied_result')])
 
-"""selecting"""
+"""-------------------------------------------------selecting-------------------------------------------------"""
 # pandas
 #print(df_pd[1:])
 #print(df_pd.iloc([0], [0]))            #return 'Belgium'
@@ -109,20 +110,20 @@ df_plo = df_pl.with_columns([(pl.col('Population') * pl.col('Area')).alias('mult
 #print(df_pl[1:])
 #print(df_pl[1:, :2])
 
-"""change datatype"""
+"""-------------------------------------------------change datatype-------------------------------------------------"""
 # pandas
 df_pd2[["Population"]] = df_pd2[["Population"]].astype(float)
 # polars
 df_pl2[["Population"]] = df_pl2.select(pl.col("Population").cast(pl.Float64))
 
-"""filtering"""
+"""-------------------------------------------------filtering-------------------------------------------------"""
 # pandas
 #print(df_pd[df_pd['Population']>1200000000])
 # polars
 #print(df_pl.filter((pl.col("Population") >1200000000 ) | (pl.col("Country") == "Belgium")))
 #print(df_pl.select(pl.col(pl.INTEGER_DTYPES).exclude('Area')))
 
-"""sorting"""
+"""-------------------------------------------------sorting-------------------------------------------------"""
 # pandas
 #print(df_pd.sort_index())
 #print(df_pd.sort_values(by='Country') )
@@ -131,7 +132,7 @@ df_pl2[["Population"]] = df_pl2.select(pl.col("Population").cast(pl.Float64))
 #print(df_pl.sort('Country'))
 #print(df_pl.with_row_index())
 
-"""lambda"""
+"""-------------------------------------------------lambda-------------------------------------------------"""
 # pandas
 f = lambda x: x*2
 df_pdo = df_pd.apply(f)
@@ -144,8 +145,8 @@ df_plo = df_pl.select(
     (pl.col("Population") + pl.col("Area")).alias("Normal_operation"),
 )
 
-"""read/ write a file"""
-# read more about excel file manipulation and sqlalchemy
+"""-------------------------------------------------read/ write data-------------------------------------------------"""
+# read more about excel file manipulation
 """csv"""
 # pandas
 #df_pd = pd.read_csv(f"{student_csv}", header=None, nrows=5)
@@ -160,8 +161,53 @@ df_plo = df_pl.select(
 #polars
 #df_pl = pl.read_parquet(f"{student_parquet}")
 #df_pl.write_parquet(f"{path}\\student_test_pl.parquet")
+"""sql"""
+from py_modules.db import db_connect
+import sqlalchemy
+from dateutil.relativedelta import relativedelta
 
-"""datetime"""
+def compute_age(date_of_birth):
+    return relativedelta(datetime.date.today(), date_of_birth).years
+
+eng, conn = db_connect()
+student = conn.execute(sqlalchemy.text(f"select * from students")).fetchall()
+course = conn.execute(sqlalchemy.text(f"select * from courses")).fetchall()
+course_att = conn.execute(sqlalchemy.text(f"select * from courses_attendance")).fetchall()
+conn.close()
+#pandas
+pd_student = pd.DataFrame(student)
+pd_course = pd.DataFrame(course)
+pd_course_att = pd.read_sql("select * from courses_attendance", eng)
+merged_pd_course = pd_course_att.merge(pd_course, how="left", left_on="course_id", right_on="course_id")
+# computing age from this one is a little complicated, 
+#pd_student_age1 = datetime.date.today() - pd_student['date_of_birth']
+# timestamp doesn't work with date and .strftime("%d %m %Y") make it string so still doesn't work with date
+#pd_student_age2 = datetime.datetime.now() - pd_student['date_of_birth'] 
+pd_student['age'] = pd_student['date_of_birth'].apply(compute_age)
+#polars
+pl_student = pl.from_pandas(pd_student)
+#pl_course = pl.DataFrame(course ,orient="row")
+pl_course = pl.from_pandas(pd_course)
+pl_course_att = pl.read_database(query="SELECT * FROM courses_attendance",connection=eng,)  
+merged_pl_course = pl_course_att.join(pl_course, on="course_id", how="left")
+pl_student = pl_student.with_columns(pl.col("date_of_birth").map_elements(compute_age, return_dtype=pl.Int64).alias("age2"))
+"""api"""
+import requests
+#1
+#pandas
+url_currency = "https://r2de3-currency-api-vmftiryt6q-as.a.run.app/gbp_thb" #list of dicts
+# convert http request to json
+result_conversion_rate = requests.get(url_currency).json()
+conversion_rate = pd.DataFrame(result_conversion_rate)
+conversion_rate = conversion_rate.drop(columns=['id'])
+conversion_rate['date'] = pd.to_datetime(conversion_rate['date'])
+#polars
+conversion_rate_pl = pl.DataFrame(result_conversion_rate)
+conversion_rate_pl = conversion_rate_pl.drop('id')
+conversion_rate_pl = conversion_rate_pl.with_columns( pl.col("date").str.to_datetime(format="%Y-%m-%d") )
+
+
+"""-------------------------------------------------datetime-------------------------------------------------"""
 d_date = {'date': {0: '28-01-2022  5:25:00',
   1: '27-02-2022  6:25:00',
   2: '30-03-2022  7:25:00',
@@ -179,4 +225,3 @@ d_date_converted = {key: list(val.values()) for key, val in d_date.items()}
 df_pl = pl.DataFrame(d_date_converted)
 df_pl = df_pl.with_columns( pl.col("date").str.to_datetime(format="%d-%m-%Y %H:%M:%S") )
 df_pl = df_pl.with_columns( pl.from_epoch(pl.col('unixtime')) )
-print(df_pl)

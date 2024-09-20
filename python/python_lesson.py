@@ -155,11 +155,21 @@ ke = "key error"
 
 """-----------------------------Class and Enum-----------------------------"""
 class MyClass:
+    """test class"""
     def __init__(self, greet="Hello"):
         self.greet = greet
 
     def greetUser(self):
         return self.greet
+    
+    def __repr__(self) -> str:
+        return f'MyClass("{self.greet}")'
+
+class MySubClass(MyClass):
+    def haha():
+        print("rofl")
+        return "lol"
+
 c = MyClass("Hola")
 a = c.greetUser()
 
@@ -178,6 +188,8 @@ for i in (HTTPStatusCode):
 """-----------------------------function-----------------------------"""
 """ *,** in front of parameter"""
 # learn more about positional parameter (*, /)
+# *args and **kwargs allow you to pass multiple arguments or keyword arguments to a function.
+# **kwds is optional choice for the function
 def f(a, b, *c):
     print(list(c))
 #f(1, 2, 3, 4 ,5)
@@ -190,10 +202,15 @@ def f(a, b, **option):
         print(a+b)
 #f('op', 'tion')
 #f('op', 'tion', c=1)
-#def f():
+def f(a, *b):
+    print(type(b))  # it's tuple 
+#f(1,2,3)
+def f(a, **b):
+    print(type(b), b.keys(), b.values()) # it's dict
+#f(a=1,b=2)
 
 def repeater(old_function):                 #function as parameter here
-    # See learnpython.org/en/Multiple%20Function%20Arguments for how *args and **kwds works (kwds is just optional here)
+    # See learnpython.org/en/Multiple%20Function%20Arguments for how *args and **kwds works
     def new_function(*args, **kwds): 
         old_function(*args, **kwds) 
         old_function(*args, **kwds) 
@@ -209,6 +226,7 @@ def multiply(multiplier):                   #variable for decorator's parameter
             return multiplier * old_function(*args, **kwds)
         return new_function
     return multiply_generator # it returns the new generator
+
 @multiply(3) # multiply is not a generator, but multiply(3) is
 def return_num(num): #as old function
     return num
@@ -243,7 +261,7 @@ from py_modules.function import plus
 d = lambda x: [x **2 if x%2==0 else x for x in range(x+3)]
 #print(d(2))
 
-"""-----------------------------partial(for parameter)-----------------------------"""
+"""-----------------------------partial(to lock some parameter but still editable)-----------------------------"""
 from functools import partial
 e = partial(plus, 2)
 #print(e(3))
@@ -292,6 +310,7 @@ from datetime import timedelta
 #print(todays_Date + timedelta(days=1))
 
 """-----------------------------file-----------------------------"""
+# `with` statement can do more than just open, close automatically [more in here https://realpython.com/python-with-statement/]
 #with open("test.txt", "a") as file:
 #    file.write("\n???")
 with open("test.txt", "r") as file:
@@ -322,5 +341,21 @@ df = pd.read_json("test.json", orient="index")
 ## what if have to create dataframe from list of dict, these functions can help to extract data: dict.get(), df.columns = ["",""], df.set_index("")
 
 """-----------------------------Code introspection-----------------------------"""
-#help(dir)
-#print( dir(plus))
+#help(print)                            #display the documentation of modules
+#print(dir(str))                        #list the names of the attributes and methods of an object
+#print(hasattr(MyClass, 'greet'))       #check if an object has a specific attribute
+#print(id(d))                           #returns the unique identifier for an object
+#print(type(d))                         #return data type of object
+#print(MyClass())                       #returns a string representation of an object 
+#print(callable(custom_sum))            #check if an object appears callable      
+#print(issubclass(MySubClass, MyClass)) #check if a class is a subclass of another class
+#print(isinstance(MyClass(), MyClass))  #check if an object is an instance of a specified class or a tuple of classes
+#print(MyClass.__doc__)                 #access the documentation string (docstring) of an object
+# __name__
+    #When a Python file is run directly, the __name__ variable is set to "__main__".
+    #When a Python file is imported as a module, the __name__ variable is set to the name of the module.
+
+"""-----------------------------path-----------------------------"""
+import pathlib
+import os
+#os.path.exists
