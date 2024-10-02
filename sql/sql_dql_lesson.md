@@ -293,3 +293,4 @@ where rankNum = 1;
 * `dense_rank()`: like `rank()` but not skip rank `1 2 2 3`
 * `row_number()`: assigns a sequential integer number to each row in the query’s result set, so the number won't be the same
 use `window function` when a calculation is needed to be performed on a set of rows(defined by partition columns) and still keep the result at row level. If we use group by we would have to use aggregation functions on any columns that are not part of the group by clause.
+[more here](https://www.startdataengineering.com/post/6-concepts-to-clearly-understand-window-functions/)

@@ -154,6 +154,7 @@ ke = "key error"
 #logging.error(f"{ke} arose in execution")
 
 """-----------------------------Class and Enum-----------------------------"""
+"""class"""
 class MyClass:
     """test class"""
     def __init__(self, greet="Hello"):
@@ -164,7 +165,7 @@ class MyClass:
     
     def __repr__(self) -> str:
         return f'MyClass("{self.greet}")'
-
+# inheritance
 class MySubClass(MyClass):
     def haha():
         print("rofl")
@@ -172,7 +173,47 @@ class MySubClass(MyClass):
 
 c = MyClass("Hola")
 a = c.greetUser()
-
+# dataclass
+# for pros and cons, can see more here: https://www.startdataengineering.com/post/code-patterns/#python-helpers
+from dataclasses import asdict, dataclass
+@dataclass
+class RedditPostData:
+    """Dataclass to hold reddit post data.
+    Args:
+        title (str): Title of the reddit post.
+        score (int): Score of the reddit post.
+        url (str): URL of the reddit post.
+        comms_num (int): Number of comments on the reddit post.
+        created (str): Datetime (string repr) of when the reddit
+             post was created.
+    """
+    title: str
+    score: int
+    url: str
+    comms_num: int
+    created: str
+    text: str
+@dataclass
+class TwitterTweetData:
+    """Dataclass to hold twitter post data.
+    Args:
+        text (str): Text of the twitter post.
+    """
+    text: str
+@dataclass
+class SocialMediaData:
+    """Dataclass to hold social media data.
+    Args:
+        id (str): ID of the social media post.
+        text (str): Text of the social media post.
+    """
+    id: str
+    source: str
+    social_data: RedditPostData | TwitterTweetData # social_data can be one of the Reddit or Twitter data types
+a = TwitterTweetData(text="Hello guys")
+b = SocialMediaData(id="abc123", source="yagoogoo", social_data=a)
+print(b.social_data)
+"""enum"""
 from enum import Enum
 class HTTPStatusCode(Enum):
     OK = 200
@@ -186,6 +227,30 @@ for i in (HTTPStatusCode):
         print(i.name, i)
 
 """-----------------------------function-----------------------------"""
+"""best practice"""
+def f(a:int, b:float) -> str:                           #typing
+    """this function will return input as string"""     #
+    return f"{a} and {b}"
+# typing
+from typing import Callable
+def f(func: Callable[[int, int], int], x: int, y: int) -> int:
+    return func(x, y)
+def e(a: int, b: int) -> int:
+    return a + b
+print( f(e, 2, 3) )
+# contextmanagaer
+from contextlib import contextmanager
+@contextmanager
+def open_file(file, mode):
+    f = open(file, mode)
+    try:
+        yield f
+    finally:
+        # if it's database connection, can put commit and close here
+        f.close()
+with open_file('test.txt', 'r') as f:
+    # if it's database connection, 'execute' can be put here
+    a = f.readlines()
 """ *,** in front of parameter"""
 # learn more about positional parameter (*, /)
 # *args and **kwargs allow you to pass multiple arguments or keyword arguments to a function.
@@ -209,6 +274,7 @@ def f(a, **b):
     print(type(b), b.keys(), b.values()) # it's dict
 #f(a=1,b=2)
 
+"""decorator"""
 def repeater(old_function):                 #function as parameter here
     # See learnpython.org/en/Multiple%20Function%20Arguments for how *args and **kwds works
     def new_function(*args, **kwds): 
