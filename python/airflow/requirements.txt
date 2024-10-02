@@ -1,0 +1,5 @@
+apache-airflow-client==2.9.0
+pytest==8.2.2
+pytest-mock==3.14.0
+isort==5.13.2
+black==24.4.2
