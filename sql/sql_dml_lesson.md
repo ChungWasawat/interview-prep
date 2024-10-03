@@ -30,7 +30,15 @@ WHERE id in between 2 and 5;
 --update where clause on view (only views from a single table and no window or aggregation function or limit there)
 update vw_films set kind = 'Dramatic' where kind = 'Drama' 
 ```
-3. delete rows 
+3. insert but if exist, update (only postgresql)
+```
+# excluded refers to the values that were attempted to be inserted
+INSERT INTO table_name (column1, column2, ...)
+VALUES (value1, value2, ...)
+ON CONFLICT (conflict_column)
+DO NOTHING | DO UPDATE SET column1 = excluded.column1, column2 = value2, ...;
+```
+4. delete rows 
 ```
 --common query
 DELETE FROM employee
