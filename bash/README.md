@@ -12,6 +12,26 @@
 - `..` = parent directory
 - `*` = wildcard (can be anything)
 - `|` = used after a command to tell computer to do the next command
+- `$` = refer variable or substitute command
+    ```
+        1.
+        name="Alice"
+        echo $name          # Outputs: Alice
+        2.
+        current_date=$(date)
+        echo $current_date  # Outputs the current date and time
+    ```
+
+## for loop and if else
+```
+for i in {1..10}; do
+  if [ $i -eq 5 ]; then
+    echo "Number is 5"
+  else
+    echo "Number is $i"
+  fi
+done
+```
 
 ## common commands
 ### pwd
