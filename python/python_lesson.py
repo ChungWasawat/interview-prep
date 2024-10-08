@@ -384,6 +384,15 @@ with open("test.txt", "r") as file:
     content2 = file.readlines()
     #print(content1, content2)
 
+"""-----------------------------api-----------------------------"""
+import requests
+# Making a get request
+response = requests.get('https://api.github.com/')
+# print response
+print(response)
+# print check if an error has occurred
+print(response.raise_for_status())
+
 """-----------------------------json and pandas-----------------------------"""
 import json
 import pandas as pd
