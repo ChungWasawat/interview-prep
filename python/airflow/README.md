@@ -34,6 +34,7 @@ main components
 #### on docker
 - [the image on docker hub](https://hub.docker.com/r/puckel/docker-airflow)
 - [step by step installation with docker](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
+- need memory at least 5GB (8GB ideally)
 ##### CeleryExecutor
 - download yaml file `curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.2/docker-compose.yaml'`
 - customize its content before start running
@@ -77,6 +78,29 @@ echo -e "AIRFLOW_GID=$(id -g)" > .env
 ```
 docker ps                               # to find a container of airflow scheduler
 docker exec -it <container_id> bash     # to log in to container, and then use airflow command 
+```
+##### LocalExecutor
+- overall, it's like `CeleryExecutor` but remove something.
+- remove `AIRFLOW__CELERY__RESULT_BACKEND` and `AIRFLOW__CELERY__BROKER_URL` from `environment` part
+- remove `redis`, `airflow-worker`, `airflow-triggerer` and `flower` from services
+
+###### to connect to google cloud
++ create a directory at home to store a key and be mapped from container 
+```
+    cd ~ && mkdir -p ~/.google/credentials/
+    mv <path/to/your/service-account-authkeys>.json ~/.google/credentials/google_credentials.json
+```
++ remove the image tag, to replace it with your build from your Dockerfile, as shown
++ add `GOOGLE_APPLICATION_CREDENTIALS`, `AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT`, `GCP_PROJECT_ID`, `GCP_GCS_BUCKET` to allow airflow to connect to gcp
++ if docker-compose can't find the folder, can add the part below in `docker-compose.yml` 
+```
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+    # here: ----------------------------
+    - c:/Users/alexe/.google/credentials/:/.google/credentials:ro
+    # -----------------------------------
 ```
 
 ## Commands
