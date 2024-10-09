@@ -55,6 +55,10 @@ RENAME to employeeV2;
 ALTER TABLE employeeV2
 ADD email text;
 
+--rename column
+ALTER TABLE table_name
+RENAME COLUMN old_name TO new_name;
+
 --delete a column
 ALTER TABLE Customers
 DROP COLUMN Email;
@@ -69,6 +73,11 @@ ADD DateOfBirth date;
 --change datatype 2
 ALTER TABLE Persons
 ALTER(/MODIFY) COLUMN DateOfBirth year;
+--change datatype 3
+ALTER TABLE students
+ALTER COLUMN average_grade
+TYPE integer
+USING ROUND(average_grade); -- can transform data while changing type
 
 --add a constraint for a foreign key
 ALTER TABLE fact_booksales ADD CONSTRAINT sales_book

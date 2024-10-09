@@ -89,17 +89,17 @@ display a current directory
 show files in current directory
 - example: `ls`, `ls directory1`
 
-- `l`: show more details like permission, users, memory used, etc.
-- `h`: use with `l` to make a list easier to read 
-- `a`: show hidden files
-- `R`: list everything below current directory
+- `-l`: show more details like permission, users, memory used, etc.
+- `-h`: use with `l` to make a list easier to read 
+- `-a`: show hidden files
+- `-R`: list everything below current directory
 #### cd 
 enter to a directory (default is home), work with these symbols `~`, `.`, `..`, `-`
 - example: `cd dir1`, `cd parent_dir1/dir1`
 #### mkdir and rmdir
 create empty directory/ remove empty directory
 - example: `mkdir -p folder1`, `rm folder1`
-- `p`: to replace existed folders with new one
+- `-p`: to replace existed folders with new one
 #### man 
 show command manuals
 - example: `man cd`
@@ -112,27 +112,27 @@ show file's content on terminal or concatenate 2 files into new one
 #### wc
 show a number of words in a file
 - example: `wc text.txt`
-- `l`: to count lines instead of words
-- `c`: to count charactors
-- `w`: to coutn words -w
+- `-l`: to count lines instead of words
+- `-c`: to count charactors
+- `-w`: to coutn words -w
 #### head
 display the first 10 lines (default) of any passed in text
 - example: `head -50 test.txt`
 #### tail
 display the last 10 lines (default) of any passed in text
 - example: `tail -50 test.txt`, `tail -f test.txt`
-- `f`: to view in real time any text appended to the file
+- `-f`: to view in real time any text appended to the file
 #### sort 
 sort output 
-- `n`: numerical order 
-- `r`: reversed order
-- `f`: fold case (case-insensitive)
-- `b`: ignore leading blank
+- `-n`: numerical order 
+- `-r`: reversed order
+- `-f`: fold case (case-insensitive)
+- `-b`: ignore leading blank
 #### cut
 - example: `cut -f 2-5, 8 -d , values.csv`, `echo 'how-to geek' | cut -c 8-11`
-- `f`: field
-- `d`: delimiter
-- `c`: charactor
+- `-f`: field
+- `-d`: delimiter
+- `-c`: charactor
 #### more 
 show all file's content
 - exmaple `more file.txt`
@@ -168,14 +168,14 @@ similar to more but split content to show on terminal and can move backward to s
 #### grep
 find a phrase in text or files
 - example: `grep search_term filename.csv `
-- `i`:	remove case sensitivity, ignore case
-- `l`:  print the names of files that contain the matches
-- `r`:	search recursively through directories
-- `w`:	search only whole words
-- `c`:	prints number of times found
-- `n`:	prints line found on with phrase
-- `v`:	prints invert match
-- `h`:  not print the filename when searching multiple files
+- `-i`:	remove case sensitivity, ignore case
+- `-l`:  print the names of files that contain the matches
+- `-r`:	search recursively through directories
+- `-w`:	search only whole words
+- `-c`:	prints number of times found
+- `-n`:	prints line found on with phrase
+- `-v`:	prints invert match
+- `-h`:  not print the filename when searching multiple files
 - [regex tutorial](https://github.com/mikeizbicki/ucr-cs100/tree/2015winter/textbook/using-bash/regex)
 #### history
 prints out an incremented command line history
@@ -192,15 +192,15 @@ finds and replaces text by searching through files for lines that have a pattern
 #### cp
 copy a file/ files into other folder
 - example: `cp file1.txt folder2` `cp -r folder1 folder2`
-- `r`: to copy all files in the folder to new one
+- `-r`: to copy all files in the folder to new one
 #### mv 
 move a file/ files or file's content
 - example: `mv file.txt folder`, `mv file1.txt file2.txt`
 #### rm
 remove files to bin
 - example: `rm file1.txt`
-- `r`: delete process includes all files in a directory
-- `f`: ignore error to delete files
+- `-r`: delete process includes all files in a directory
+- `-f`: ignore error to delete files
 #### ln
 create shortcut for file, so when there are changes in shortcut files, the changes also happen in original file
 - example: `ln -s file.txt linked_file.txt`
@@ -230,24 +230,32 @@ execute bash files
 update changes like change paths, set new path to a machine profile
 - example: `source ~/.bashrc` after `export JAVA_HOME="/lib/java-11-openjdk"`
 #### wget and curl
-extract data from URL 
-- example: `wget https://source.com/123.txt` `wget -O new_name.txt https://source.com/123.txt`
-- `O`: save a downloaded file as new name
-- example: `curl https://source.com/123.txt` `curl -o new_name.text https://source.com/123.txt`
-- `o`: save a downloaded file as new name
+extract data from URL but wget is better in downloading multiple files
+- example: `wget https://source.com/123.txt`, `wget -O new_name.txt https://source.com/123.txt`
+- `-O`: save a downloaded file as new name
+- `-b`: background download
+- `-q`: turn off wget output
+- `-c`: resume broken download
+- `-i`: download from list given in a file
+- `--wait=1`: wait 1 second before download
+- example: `curl https://source.com/123.txt`, `curl -o new_name.text https://source.com/123.txt`
+- `-O`: download with existing filename
+- `-o`: save a downloaded file as new name
+- `-L`: redirect HTTP if 300 error code occurs
+- `-C`: resume previous file transfer if it times out before completion
 #### zip and unzip
 `zip` compress folder into zip files
 `unzip` extract content in zip file
 - example: `zip name.zip folder1`, `zip name.zip file1 file2`
 - example: `unzip name.zip`, `unzip -l name.zip`
-- `l`: to see the content of a zip file without extracting
+- `-l`: to see the content of a zip file without extracting
 #### tar
 - example: `tar -xf dir1.tar`, `tar -cf dir1.tar foo bar`
-- `c`: create a tar file
-- `x`: extract a tar file
-- `v`, `verbose`: list processed files
-- `z`: extract only gzip
-- `f`: extract chosen files  
+- `-c`: create a tar file
+- `-x`: extract a tar file
+- `-v`, `verbose`: list processed files
+- `-z`: extract only gzip
+- `-f`: extract chosen files  
 #### ping
 tests a network connection
 - example: `ping google.com`
@@ -281,6 +289,40 @@ short for process status, prints out information about the processes running
   - terminal type (TTY),
   - how long process has been running (TIME)
   - name of command that launched the process (CMD)
+#### csvkit (in2csv, csvlook, csvstat, csvcut, csvgrep, csvstack)
+- example: `in2csv filename.xlsx —sheet “sheet1” > filename.csv`, `in2csv -n filename.xlsx`
+- `-sheet`: choose a specific sheet
+- `-n`:  list all sheet names
+- example: `csvlook filename.csv`
+  - ex1: preview filename.csv to console
+- example: `csvstat filename.csv`
+  - ex1: work like pandas `df.describe()`
+- example: `csvcut -n filename.csv`, `csvcut -c 1 filename.csv`
+- `-n`: list all column names in filename.csv 
+- `-c`: return column index `n`(regarding result from csvcut -n ) or column name from filename.csv 
+- example: `csvgrep -c "column name" -m value filename.csv`
+  - ex1: filter filename.csv where column name = value 
+- `-m`: exact row value
+- `-r`: regex pattern
+- `-f`: path to a file
+- example: `csvstack file1.csv file2.csv > allfile.csv`, `csvstack -g “f1”,”f2” -n "source" file1.csv file2.csv > allfile.csv`
+  - ex1: stack file1.csv and file2.csv together and save to allfile.csv 
+  - ex2: create a special column name source (instead of the default group)to identify which row comes from which file
+#### sql
+- example: `sql2csv --db "sqlite:///database.db" --query "SELECT * FROM base" > filename.csv`
+  - ex1: connect to database `sqlite:///database.db` using query `SELECT * FROM base` and save to `filename.csv`
+- example: `csvsql --query "SELECT * FROM base LIMIT 1" filename.csv`
+  - ex1: use the above query to select data from local `filename.csv` file
+- example: `csvsql --query "SELECT * FROM base1 INNER JOIN base2 ON ID" base1.csv base2.csv`
+  - ex1: can use for multiple csv but the bases should appear in order according to SQL query
+- example: `csvsql --no-inference --no-constraints --db "sqlite:///database.db" --insert filename.csv`
+  - ex1: insert `filename.csv` to database 
+- `--no-inference`: disable type parsing (consider everything as string)
+- `--no-constraints`:  generate schema without length limit or null check
+#### cronjob
+- example: `echo "* * * * * python hello_world.py" | crontab`, `crontab -l `
+  - \* minute(0-59), * hour(0-23), * day of month(1-31), * month(1-12), * day of week(0-6)
+- `-l`: list all cron jobs
 
 ## Permission
 use `ls -l` to print out permission of each file and other information
