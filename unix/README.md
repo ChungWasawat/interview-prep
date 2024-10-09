@@ -24,6 +24,13 @@
     ```
 - `$?` = a variable that will return the exit code of the last command you ran
 
+## For Loop  
+```
+# print name of every csv file in the folder directory
+for filename in directory/*.csv; do 
+  echo $filename; done 
+```
+
 ## Environment Variables  
 common ones    
 - `PATH`: contains a list of directories where systems look for executable files.
@@ -75,17 +82,6 @@ Adding a `&` with the `>` symbol results in redirecting both standard out and st
   stderr
   ```
 
-## For Loop and If Else    
-```
-for i in {1..10}; do
-  if [ $i -eq 5 ]; then
-    echo "Number is 5"
-  else
-    echo "Number is $i"
-  fi
-done
-```
-
 ## Common Commands
 #### pwd
 display a current directory
@@ -96,6 +92,7 @@ show files in current directory
 - `l`: show more details like permission, users, memory used, etc.
 - `h`: use with `l` to make a list easier to read 
 - `a`: show hidden files
+- `R`: list everything below current directory
 #### cd 
 enter to a directory (default is home), work with these symbols `~`, `.`, `..`, `-`
 - example: `cd dir1`, `cd parent_dir1/dir1`
@@ -116,6 +113,8 @@ show file's content on terminal or concatenate 2 files into new one
 show a number of words in a file
 - example: `wc text.txt`
 - `l`: to count lines instead of words
+- `c`: to count charactors
+- `w`: to coutn words -w
 #### head
 display the first 10 lines (default) of any passed in text
 - example: `head -50 test.txt`
@@ -123,6 +122,17 @@ display the first 10 lines (default) of any passed in text
 display the last 10 lines (default) of any passed in text
 - example: `tail -50 test.txt`, `tail -f test.txt`
 - `f`: to view in real time any text appended to the file
+#### sort 
+sort output 
+- `n`: numerical order 
+- `r`: reversed order
+- `f`: fold case (case-insensitive)
+- `b`: ignore leading blank
+#### cut
+- example: `cut -f 2-5, 8 -d , values.csv`, `echo 'how-to geek' | cut -c 8-11`
+- `f`: field
+- `d`: delimiter
+- `c`: charactor
 #### more 
 show all file's content
 - exmaple `more file.txt`
@@ -157,12 +167,15 @@ similar to more but split content to show on terminal and can move backward to s
   Moves down a page
 #### grep
 find a phrase in text or files
-- `i`:	remove case sensitivity
+- example: `grep search_term filename.csv `
+- `i`:	remove case sensitivity, ignore case
+- `l`:  print the names of files that contain the matches
 - `r`:	search recursively through directories
 - `w`:	search only whole words
 - `c`:	prints number of times found
 - `n`:	prints line found on with phrase
 - `v`:	prints invert match
+- `h`:  not print the filename when searching multiple files
 - [regex tutorial](https://github.com/mikeizbicki/ucr-cs100/tree/2015winter/textbook/using-bash/regex)
 #### history
 prints out an incremented command line history
@@ -201,7 +214,16 @@ create file if not exist and edit text there
 #### nano
 create file if not exist and edit text there 
 - example: `nano text.txt`
-- `ctrl + x` >> write `y` >> `enter` to exit and save 
+- `ctrl + x`: to exit
+- `ctrl + k`: to cut a line
+- `ctrl + u`: to paste a line from clipboard
+- `ctrl + o`: to save the file
+#### uniq 
+remove adjacent of duplicate lines
+- example: `uniq test.txt`
+#### bash 
+run commands in script.sh 
+- example: `bash test.sh`
 #### source
 execute bash files
 - example: `source dir1/test.sh`
