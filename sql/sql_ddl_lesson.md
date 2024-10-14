@@ -20,13 +20,18 @@ create table employee (
     id int NOT NULL,
     pid int,
     name text,
+    age int, 
     department text,
     position text,
     salary real,
+    start_date date default current_date,
     UNIQUE (id)
     PRIMARY KEY (id)
     FOREIGN KEY (pid) REFERENCES persons(pid)
+    CHECK (age >= 18)
     );
+
+--constaints: primary key, unique, not null, foreign key (col) references table(col), check, default 
 ```
 2. copy table (can create a table from a csv file with this command in duckdb)
 ```
@@ -132,4 +137,17 @@ create table sales_2010_q1 partition of sales
     for values from ('2010-01-01') to ('2010-03-31')
 --create index 
 create index on sales('timestamp');
+```
+8. procedure
+```
+-- the procedure will create a table when it is called
+CREATE PROCEDURE CreateNewTable ()
+BEGIN
+    CREATE TABLE NewDepartment (
+        dept_id INT PRIMARY KEY,
+        dept_name VARCHAR(50)
+    );
+END;
+-- Executing the stored procedure
+CALL CreateNewDepartmentTable();
 ```

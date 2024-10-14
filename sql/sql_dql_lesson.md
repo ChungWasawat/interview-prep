@@ -294,3 +294,11 @@ where rankNum = 1;
 * `row_number()`: assigns a sequential integer number to each row in the query’s result set, so the number won't be the same
 use `window function` when a calculation is needed to be performed on a set of rows(defined by partition columns) and still keep the result at row level. If we use group by we would have to use aggregation functions on any columns that are not part of the group by clause.
 [more here](https://www.startdataengineering.com/post/6-concepts-to-clearly-understand-window-functions/)
+### procedure
+```
+-- the procedure accept empID as input to do a select command
+CREATE PROCEDURE GetEmployeeInfo (IN empID INT)
+BEGIN
+    SELECT * FROM Employees WHERE emp_id = empID;
+END;
+```

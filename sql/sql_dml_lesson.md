@@ -56,3 +56,22 @@ WHERE id IN (
     WHERE a.rn > 1
 );
 ```
+5. create trigger to insert/ update/ delete rows
+```
+--insert log of a newly added row
+CREATE TRIGGER LogNewEmployee
+AFTER INSERT ON Employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO EmployeeLog (emp_id, action, action_time)
+    VALUES (NEW.emp_id, 'INSERT', NOW());
+END;
+```
+6. procedure
+```
+-- the procedure accept empID, newSalary as input to do an update command
+CREATE PROCEDURE UpdateEmployeeSalary (IN empID INT, IN newSalary DECIMAL)
+BEGIN
+    UPDATE Employees SET salary = newSalary WHERE emp_id = empID;
+END;
+```

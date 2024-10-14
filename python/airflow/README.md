@@ -103,13 +103,15 @@ docker exec -it <container_id> bash     # to log in to container, and then use a
     # -----------------------------------
 ```
 
-## Commands
+## Bash Commands
 - `airflow dags list` to list all dags
 - `airflow dags backfill -s 2024-09-25 -e 2024-09-28 <dag_id>` to execute backfilling
 - `airflow tasks list <dag_id>` to list all tasks in the dag
     - `--tree` to show in hierarchy
 - `airflow test <dag_id> <task_id> 2024-09-28` to test a task in specific dag
     - `airflow tasks test <dag_id> <task_id> 2024-09-28` 
+- `airflow run <dag_id> <task_id> <date> ` to run a specific task from command line
+- `airflow trigger_dag -e <date> <dag_id>` to run a full DAG
 
 ## Connections
 #### postgresql
@@ -120,6 +122,76 @@ docker exec -it <container_id> bash     # to log in to container, and then use a
     - schema: anything, test
     - login: airflow
     - port: 5432 
+
+## Sensor
+#### FileSensor
+```
+from airflow.contrib.sensors.file_sensor import FileSensor
+
+file_sensor_task = FileSensor(task_id='file_sense',
+                              filepath='file.csv',
+                              poke_interval=300,
+                              dag=some_dag)
+
+init_cleanup >> file_sensor_task >> generate_report
+# This will perform a cleanup task and wait until the file is generated,
+# then create the report.  
+```
+#### ExternalTaskSensor 
+#### HttpSensor 
+#### SqlSensor 
+* other sensors in `airflow.sensors` and `airflow.contrib.sensors`
+
+## Task Branching
+example 1
+```
+def branch_test(**kwargs):
+  if int(kwargs['ds_nodash'] % 2 == 0:
+    return 'even_day_task'
+  else:
+    return 'odd_day_task
+
+branch_task = BranchPythonOperator(task_id='branch_task', dag=dag,
+          provide_context=True,
+          python_callable=branch_test)
+
+start_task >> branch_task >> even_day_task >> even_day_task2
+branch_task >> odd_day_task >> odd_day_task2
+```
+
+## Document template (Jinja style)
+example 1
+```
+templated_command = """
+  echo "Reading {{ params.filename }}"
+"""
+t1 = BashOperator(task_id='template_task',
+                  bash_command=templated_command,
+                  params={'filename': 'file1.txt'},
+                  dag=some_dag}
+```
+example 2
+```
+templated_command = """
+{% for filename in params.filenames%}
+  echo "Reading {{ params.filename }}"
+{% endfor %}
+"""
+t1 = BashOperator(task_id='template_task',
+                  bash_command=templated_command,
+                  params={'filenames': ['file1.txt', 'file2.txt']},
+                  dag=some_dag}
+```
+#### special variables
+- `{{ ds }}`: running date in YYYY-MM-DD 
+- `{{ ds_nodash }}`: YYYYMMDD
+- `{{ prev_ds }}`: previous running date in YYYY-MM-DD 
+- `{{ prev_ds_nodash }}` : YYYYMMDD
+- `{{ dag }}`: DAG object
+- `{{ conf }}`: Airflow config
+- `{{ macros.datetime }}`: datetime.datetime object in python
+- `{{ macros.timedelta }}`: timedelta object in python
+- `{{ macros.ds_add(’2020-04-15’,  5) }}`: modify days from date → in this case, 2020-04-20
 
 ## Emails 
 ### local
